@@ -1,0 +1,36 @@
+package ao.julogic404.kubixapics.core.common.model
+
+import android.graphics.Bitmap
+
+/**
+ * Uma imagem ja processada (convertida, redimensionada ou comprimida).
+ *
+ * Guarda apenas uma miniatura pequena (nunca o bitmap completo) e os bytes do
+ * resultado, para que lotes grandes nao esgotem a memoria do dispositivo.
+ */
+class ImagemEditada(
+    val id: String,
+    val displayName: String,
+    val originalSize: Long,
+    val resultSize: Long,
+    val width: Int,
+    val height: Int,
+    val thumbnail: Bitmap?,
+    val bytes: ByteArray,
+    val format: ImagemFormato
+) {
+    /** Percentagem poupada/reduzida (pode ser negativa se o ficheiro cresceu). */
+    val savingsPercent: Int
+        get() = if (originalSize <= 0L) 0
+        else (((originalSize - resultSize) * 100.0) / originalSize).toInt()
+
+    val hasSavings: Boolean get() = savingsPercent > 0
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ImagemEditada) return false
+        return id == other.id
+    }
+
+    override fun hashCode(): Int = id.hashCode()
+}

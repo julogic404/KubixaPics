@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- No modo escuro a barra de estado tem fundo escuro: icones claros -->
+    <style name="Theme.KubixaPics" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/verde_marca</item>
+        <item name="colorOnPrimary">@color/sobre_marca</item>
+        <item name="colorPrimaryContainer">@color/verde_marca_contentor</item>
+        <item name="colorOnPrimaryContainer">@color/texto_primario</item>
+        <item name="colorSecondary">@color/verde_marca_claro</item>
+        <item name="colorSurface">@color/superficie_cartao</item>
+        <item name="colorOnSurface">@color/texto_primario</item>
+        <item name="colorSurfaceVariant">@color/superficie_rebaixada</item>
+        <item name="colorOnSurfaceVariant">@color/texto_secundario</item>
+        <item name="colorOutline">@color/contorno_suave</item>
+        <item name="colorError">@color/erro</item>
+        <item name="android:colorBackground">@color/superficie_base</item>
+        <item name="colorOnBackground">@color/texto_primario</item>
+
+        <item name="android:windowBackground">@color/superficie_base</item>
+        <item name="android:statusBarColor">@color/superficie_base</item>
+        <item name="android:navigationBarColor">@color/superficie_base</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
+        <item name="android:enforceStatusBarContrast" tools:targetApi="29">false</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="29">false</item>
+    </style>
+</resources>

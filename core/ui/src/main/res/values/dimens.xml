@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="altura_barra_ferramentas">56dp</dimen>
+    <dimen name="padding_ecra">20dp</dimen>
+    <dimen name="padding_cartao">18dp</dimen>
+    <dimen name="raio_cartao">18dp</dimen>
+    <dimen name="espaco_pequeno">8dp</dimen>
+    <dimen name="espaco_medio">12dp</dimen>
+    <dimen name="espaco_grande">20dp</dimen>
+    <dimen name="tamanho_miniatura">64dp</dimen>
+    <dimen name="tamanho_botao_icone">40dp</dimen>
+    <dimen name="altura_zona_soltar">168dp</dimen>
+</resources>

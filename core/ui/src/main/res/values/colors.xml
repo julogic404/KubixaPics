@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Paleta clara -->
+    <color name="verde_marca">#16A34A</color>
+    <color name="verde_marca_escuro">#15803D</color>
+    <color name="verde_marca_claro">#22C55E</color>
+    <color name="verde_marca_contentor">#DCFCE7</color>
+
+    <color name="superficie_base">#F7F8F7</color>
+    <color name="superficie_cartao">#FFFFFF</color>
+    <color name="superficie_rebaixada">#EEF1EE</color>
+    <color name="contorno_suave">#DDE3DD</color>
+
+    <color name="texto_primario">#111813</color>
+    <color name="texto_secundario">#4B5750</color>
+    <color name="texto_suave">#7C8A82</color>
+
+    <color name="sucesso">#16A34A</color>
+    <color name="aviso">#D97706</color>
+    <color name="erro">#DC2626</color>
+    <color name="sobre_marca">#FFFFFF</color>
+
+    <color name="veu">#66000000</color>
+    <color name="transparente">#00000000</color>
+</resources>

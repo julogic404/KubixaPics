@@ -1,0 +1,182 @@
+name: Android CI
+
+# Compila debug em cada push/PR e, em tags v*, gera tambem o release assinado.
+on:
+  push:
+    branches: [ main, master, develop ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main, master, develop ]
+  workflow_dispatch:
+    inputs:
+      build_release:
+        description: 'Gerar tambem o release assinado'
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # 1. Verificacoes rapidas: lint + testes unitarios
+  # ---------------------------------------------------------------------------
+  checks:
+    name: Lint e testes unitarios
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Configurar Gradle (com cache)
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Permissoes do wrapper
+        run: chmod +x ./gradlew
+
+      - name: Testes unitarios (todos os modulos)
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      - name: Lint
+        run: ./gradlew lintDebug --stacktrace
+
+      - name: Publicar relatorios
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorios-lint-testes
+          path: |
+            **/build/reports/lint-results-*.html
+            **/build/reports/tests/**
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # ---------------------------------------------------------------------------
+  # 2. APK de debug (sempre)
+  # ---------------------------------------------------------------------------
+  debug:
+    name: APK debug
+    runs-on: ubuntu-latest
+    needs: checks
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Configurar Gradle (com cache)
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Permissoes do wrapper
+        run: chmod +x ./gradlew
+
+      - name: Build debug
+        run: ./gradlew :app:assembleDebug --stacktrace
+
+      - name: Localizar APK
+        id: apk
+        run: |
+          APK=$(find app/build/outputs/apk/debug -name '*.apk' | head -n 1)
+          echo "path=$APK" >> "$GITHUB_OUTPUT"
+          echo "APK: $APK"
+
+      - name: Publicar APK debug
+        uses: actions/upload-artifact@v4
+        with:
+          name: KubixaPics-debug
+          path: ${{ steps.apk.outputs.path }}
+          retention-days: 14
+
+  # ---------------------------------------------------------------------------
+  # 3. Release assinado (tags v* ou dispatch manual)
+  # ---------------------------------------------------------------------------
+  release:
+    name: APK + AAB release
+    runs-on: ubuntu-latest
+    needs: checks
+    if: startsWith(github.ref, 'refs/tags/v') || inputs.build_release == true
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Configurar Gradle (com cache)
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Permissoes do wrapper
+        run: chmod +x ./gradlew
+
+      # O keystore e reconstruido a partir de secrets: nunca fica no repositorio.
+      - name: Reconstruir keystore a partir dos secrets
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::Falta o secret KEYSTORE_BASE64. Ver docs/BUILD.md."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 --decode > kubixapics-release.jks
+          cat > keystore.properties <<EOF
+          storeFile=kubixapics-release.jks
+          storePassword=$KEYSTORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
+          EOF
+
+      - name: Build release (APK + AAB)
+        run: ./gradlew :app:assembleRelease :app:bundleRelease --stacktrace
+
+      - name: Verificar assinatura
+        run: |
+          APKSIGNER=$(find "$ANDROID_HOME/build-tools" -name apksigner | sort -V | tail -n 1)
+          APK=$(find app/build/outputs/apk/release -name '*.apk' | head -n 1)
+          "$APKSIGNER" verify --print-certs "$APK"
+
+      - name: Publicar APK release
+        uses: actions/upload-artifact@v4
+        with:
+          name: KubixaPics-release-apk
+          path: app/build/outputs/apk/release/*.apk
+          retention-days: 30
+
+      - name: Publicar AAB release
+        uses: actions/upload-artifact@v4
+        with:
+          name: KubixaPics-release-aab
+          path: app/build/outputs/bundle/release/*.aab
+          retention-days: 30
+
+      - name: Anexar a uma Release do GitHub
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/bundle/release/*.aab
+          generate_release_notes: true
+
+      - name: Limpar credenciais
+        if: always()
+        run: rm -f keystore.properties kubixapics-release.jks

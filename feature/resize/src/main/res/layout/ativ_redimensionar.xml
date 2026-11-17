@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/superficie_base">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/barraFerramentas"
+        style="@style/Widget.KubixaPics.BarraFerramentas"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/altura_barra_ferramentas"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_seta_voltar"
+        app:title="@string/redimensao_titulo" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/conteudo"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingStart="@dimen/padding_ecra"
+        android:paddingEnd="@dimen/padding_ecra"
+        android:paddingBottom="24dp"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toTopOf="@id/barraInferior"
+        app:layout_constraintTop_toBottomOf="@id/barraFerramentas">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Pre-visualizacao -->
+            <LinearLayout
+                android:id="@+id/cartaoEscolher"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/fundo_cartao"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="@dimen/padding_cartao">
+
+                <ImageView
+                    android:id="@+id/ivPreVisualizacao"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:background="@drawable/fundo_miniatura"
+                    android:contentDescription="@string/acao_escolher_imagem"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_imagem_vazia" />
+
+                <TextView
+                    android:id="@+id/tvTamanhoOriginal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/redimensao_sem_imagem"
+                    android:textColor="@color/texto_secundario"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tvTamanhoAlvo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="@color/verde_marca"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <ProgressBar
+                    android:id="@+id/barraProgresso"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:indeterminateTint="@color/verde_marca"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- Modo -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/fundo_cartao"
+                android:orientation="vertical"
+                android:padding="@dimen/padding_cartao">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:id="@+id/grupoChipsModo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:chipSpacingHorizontal="8dp"
+                    app:selectionRequired="true"
+                    app:singleLine="false"
+                    app:singleSelection="true" />
+
+                <!-- Dimensoes exatas -->
+                <LinearLayout
+                    android:id="@+id/grupoExato"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="6dp"
+                            android:layout_weight="1"
+                            android:hint="@string/redimensao_largura"
+                            style="@style/Widget.KubixaPics.CampoTexto">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etLargura"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:maxLength="5" />
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="6dp"
+                            android:layout_weight="1"
+                            android:hint="@string/redimensao_altura"
+                            style="@style/Widget.KubixaPics.CampoTexto">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/etAltura"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:inputType="number"
+                                android:maxLength="5" />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <com.google.android.material.materialswitch.MaterialSwitch
+                        android:id="@+id/switchManterProporcao"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:checked="true"
+                        android:text="@string/redimensao_manter_proporcao"
+                        android:textColor="@color/texto_secundario"
+                        android:textSize="13sp" />
+
+                    <LinearLayout
+                        android:id="@+id/grupoPredefinicoes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:text="@string/redimensao_predefinicoes"
+                        android:textAppearance="@style/TextAppearance.KubixaPics.TituloSecao"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/grupoChipsPredefinicoes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        app:chipSpacingHorizontal="8dp"
+                        app:singleLine="false"
+                        app:singleSelection="true" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Percentagem -->
+                <LinearLayout
+                    android:id="@+id/grupoPercentagem"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/redimensao_percentagem"
+                        style="@style/Widget.KubixaPics.CampoTexto">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etPercentagem"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:maxLength="3"
+                            android:text="100" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+
+                <!-- Limite maximo -->
+                <LinearLayout
+                    android:id="@+id/grupoMaximo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/redimensao_largura_max"
+                        style="@style/Widget.KubixaPics.CampoTexto">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etLarguraMax"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:maxLength="5" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:hint="@string/redimensao_altura_max"
+                        style="@style/Widget.KubixaPics.CampoTexto">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etAlturaMax"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:maxLength="5" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Barra de acoes FIXA: fica sempre visivel, fora do scroll -->
+    <LinearLayout
+        android:id="@+id/barraInferior"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/superficie_base"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/contorno_suave" />
+
+        <LinearLayout
+            android:id="@+id/linhaAcoes"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="@dimen/padding_ecra"
+            android:paddingTop="@dimen/espaco_medio"
+            android:paddingEnd="@dimen/padding_ecra"
+            android:paddingBottom="@dimen/espaco_medio">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAplicar"
+                style="@style/Widget.KubixaPics.Botao.Primario"
+                android:layout_width="match_parent"
+                android:layout_height="54dp"
+                android:enabled="false"
+                android:text="@string/acao_aplicar"
+                android:textSize="15sp"
+                app:icon="@drawable/ic_transferir"
+                app:iconGravity="textStart"
+                app:iconPadding="8dp"
+                app:iconTint="@color/sobre_marca" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

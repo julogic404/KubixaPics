@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Brand -->
+    <string name="nome_app">Kubixa Pics</string>
+    <string name="slogan_app">A complete image studio, 100% offline</string>
+
+    <!-- Navigation / actions -->
+    <string name="acao_sobre">About</string>
+    <string name="acao_voltar">Back</string>
+    <string name="acao_guardar">Save</string>
+    <string name="acao_partilhar">Share</string>
+    <string name="acao_remover">Remove</string>
+    <string name="acao_limpar_tudo">Clear all</string>
+    <string name="acao_guardar_todas">Save all</string>
+    <string name="acao_escolher_mais">Add images</string>
+    <string name="acao_escolher_imagem">Choose image</string>
+    <string name="acao_aplicar">Apply and save</string>
+
+    <!-- Home -->
+    <string name="inicio_estat_convertidas">Images edited</string>
+    <string name="inicio_estat_poupado">Space saved</string>
+    <string name="inicio_estat_media">Average saving</string>
+    <string name="inicio_ferramentas_titulo">Tools</string>
+    <string name="inicio_privacidade">Everything happens on your device. No image is ever uploaded to the internet.</string>
+    <string name="valor_percentagem">%1$d%%</string>
+
+    <!-- Tools -->
+    <string name="ferramenta_converter">Convert format</string>
+    <string name="ferramenta_converter_desc">JPG, PNG, WebP, AVIF, BMP, TIFF, SVG, HEIC</string>
+    <string name="ferramenta_redimensionar">Resize</string>
+    <string name="ferramenta_redimensionar_desc">Dimensions, percentage and social media presets</string>
+    <string name="ferramenta_cortar">Crop</string>
+    <string name="ferramenta_cortar_desc">Free, 1:1, circle, 16:9 and 4:3 with rotation</string>
+    <string name="ferramenta_comprimir">Compress</string>
+    <string name="ferramenta_comprimir_desc">Adjustable quality and a maximum file size target</string>
+
+    <!-- Convert -->
+    <string name="converter_titulo">Convert</string>
+    <string name="formato_rotulo">Output format</string>
+    <string name="qualidade_rotulo">Quality</string>
+    <string name="qualidade_valor">%1$d%%</string>
+    <string name="qualidade_dica_baixa">Very light files, some visible loss</string>
+    <string name="qualidade_dica_media">Recommended balance between size and quality</string>
+    <string name="qualidade_dica_alta">Near-original quality, larger files</string>
+    <string name="qualidade_nao_aplicavel">%1$s does not use adjustable quality</string>
+    <string name="tam_max_rotulo">Maximum size</string>
+    <string name="tam_max_original">Original</string>
+    <string name="tam_max_2048">2048 px</string>
+    <string name="tam_max_1280">1280 px</string>
+    <string name="tam_max_800">800 px</string>
+    <string name="zona_soltar_titulo">Tap to choose images</string>
+    <string name="zona_soltar_subtitulo">JPG, PNG, WebP, GIF, BMP, TIFF, SVG, AVIF or HEIC</string>
+    <string name="a_converter">Converting\u2026</string>
+    <string name="a_comprimir">Compressing\u2026</string>
+    <string name="estado_vazio_titulo">No images yet</string>
+    <string name="estado_vazio_subtitulo">Processed images appear here</string>
+    <string name="resumo_titulo">Summary</string>
+    <string name="resumo_contagem">%1$d images</string>
+    <string name="resumo_poupado">Saved %1$s (%2$d%%)</string>
+    <string name="seta_tamanho">%1$s \u2192 %2$s</string>
+    <string name="poupanca_selo">-%1$d%%</string>
+    <string name="poupanca_nenhuma">No reduction</string>
+
+    <!-- Resize -->
+    <string name="redimensao_titulo">Resize</string>
+    <string name="redimensao_modo_exato">Dimensions</string>
+    <string name="redimensao_modo_percentagem">Percentage</string>
+    <string name="redimensao_modo_max">Max limit</string>
+    <string name="redimensao_largura">Width (px)</string>
+    <string name="redimensao_altura">Height (px)</string>
+    <string name="redimensao_percentagem">Percentage (%)</string>
+    <string name="redimensao_largura_max">Max width (px)</string>
+    <string name="redimensao_altura_max">Max height (px)</string>
+    <string name="redimensao_manter_proporcao">Keep aspect ratio</string>
+    <string name="redimensao_predefinicoes">Presets</string>
+    <string name="redimensao_original">Original: %1$d \u00d7 %2$d</string>
+    <string name="redimensao_alvo">Result: %1$d \u00d7 %2$d</string>
+    <string name="redimensao_sem_imagem">Choose an image to start</string>
+
+    <!-- Crop -->
+    <string name="cortar_titulo">Crop</string>
+    <string name="cortar_proporcao">Aspect</string>
+    <string name="cortar_rotacao">Rotation: %1$d\u00b0</string>
+    <string name="cortar_rodar">Rotate 90\u00b0</string>
+    <string name="cortar_sem_imagem">Choose an image to crop</string>
+    <string name="cortar_dica">Drag the corners to adjust the crop</string>
+
+    <!-- Compress -->
+    <string name="comprimir_titulo">Compress</string>
+    <string name="alvo_rotulo">Maximum file size</string>
+    <string name="alvo_nenhum">No limit</string>
+    <string name="alvo_500kb">500 KB</string>
+    <string name="alvo_1mb">1 MB</string>
+    <string name="alvo_2mb">2 MB</string>
+
+    <!-- Messages -->
+    <string name="msg_convertidas">%1$d images converted</string>
+    <string name="msg_convertidas_parcial">%1$d converted, %2$d failed</string>
+    <string name="msg_comprimidas">%1$d images compressed</string>
+    <string name="msg_comprimidas_parcial">%1$d compressed, %2$d failed</string>
+    <string name="msg_guardada">Saved to Pictures/KubixaPics</string>
+    <string name="msg_guardadas_contagem">%1$d images saved to Pictures/KubixaPics</string>
+    <string name="msg_guardar_falhou">Failed to save the image</string>
+    <string name="msg_guardar_falhou_contagem">%1$d images were not saved</string>
+    <string name="msg_limpa">List cleared</string>
+    <string name="msg_nada_para_guardar">There are no images to save</string>
+    <string name="msg_partilha_indisponivel">No app available to share</string>
+    <string name="msg_redimensao_falhou">Could not resize (out of memory?). Try a smaller size.</string>
+<string name="msg_corte_falhou">Could not crop the image</string>
+
+    <!-- About -->
+    <string name="sobre_titulo">About</string>
+    <string name="sobre_formatos_titulo">Supported formats</string>
+    <string name="sobre_formatos_entrada">Input: JPG, PNG, WebP, GIF, BMP, TIFF, SVG, AVIF, HEIC/HEIF</string>
+    <string name="sobre_formatos_saida">Output: WebP, PNG, JPG, AVIF, BMP, TIFF</string>
+    <string name="sobre_recursos_titulo">What does this app do?</string>
+    <string name="recurso_offline">Works 100% offline</string>
+    <string name="recurso_privacidade">Images never leave the device</string>
+    <string name="recurso_lote">Processes several images at once</string>
+    <string name="recurso_qualidade">Quality, resolution and size control</string>
+    <string name="recurso_exif">Automatically fixes photo orientation</string>
+    <string name="recurso_transparencia">Preserves transparency when the format supports it</string>
+    <string name="sobre_desenvolvedor_nome">JuLogic 404</string>
+    <string name="sobre_desenvolvedor_link">github.com/julogic404</string>
+    <string name="sobre_desenvolvedor_link_desc">Open JuLogic 404 portfolio on GitHub</string>
+</resources>

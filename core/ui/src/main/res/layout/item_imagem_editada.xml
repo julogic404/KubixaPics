@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/fundo_cartao"
+    android:orientation="horizontal"
+    android:padding="12dp">
+
+    <ImageView
+        android:id="@+id/ivPreVisualizacao"
+        android:layout_width="@dimen/tamanho_miniatura"
+        android:layout_height="@dimen/tamanho_miniatura"
+        android:background="@drawable/fundo_miniatura"
+        android:contentDescription="@string/ferramenta_converter"
+        android:scaleType="centerCrop" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="8dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvNomeFicheiro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="middle"
+            android:maxLines="1"
+            android:textColor="@color/texto_primario"
+            android:textSize="13sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvTamanhos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:textColor="@color/texto_secundario"
+            android:textSize="11sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvPoupanca"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/fundo_selo_sucesso"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                android:textColor="@color/sucesso"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvDimensoes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:textColor="@color/texto_suave"
+                android:textSize="10sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnGuardar"
+            android:layout_width="@dimen/tamanho_botao_icone"
+            android:layout_height="@dimen/tamanho_botao_icone"
+            android:background="@drawable/fundo_botao_icone"
+            android:contentDescription="@string/acao_guardar"
+            android:src="@drawable/ic_transferir"
+            app:tint="@color/verde_marca" />
+
+        <ImageButton
+            android:id="@+id/btnPartilhar"
+            android:layout_width="@dimen/tamanho_botao_icone"
+            android:layout_height="@dimen/tamanho_botao_icone"
+            android:layout_marginStart="2dp"
+            android:background="@drawable/fundo_botao_icone"
+            android:contentDescription="@string/acao_partilhar"
+            android:src="@drawable/ic_partilhar"
+            app:tint="@color/texto_secundario" />
+
+        <ImageButton
+            android:id="@+id/btnRemover"
+            android:layout_width="@dimen/tamanho_botao_icone"
+            android:layout_height="@dimen/tamanho_botao_icone"
+            android:layout_marginStart="2dp"
+            android:background="@drawable/fundo_botao_icone"
+            android:contentDescription="@string/acao_remover"
+            android:src="@drawable/ic_fechar"
+            app:tint="@color/erro" />
+    </LinearLayout>
+
+</LinearLayout>

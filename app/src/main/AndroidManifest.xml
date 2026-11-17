@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Leitura: nao e preciso permissao nenhuma, o Photo Picker / seletor de
+         documentos concede acesso so as imagens escolhidas. -->
+    <!-- Escrita direta apenas em Android 9 e anteriores (Q+ usa MediaStore) -->
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <application
+        android:name=".ImagemEditorApp"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/nome_app"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.KubixaPics"
+        tools:targetApi="35">
+
+        <activity
+            android:name=".PrincipalAtiv"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Activities dos modulos de funcionalidade -->
+        <activity
+            android:name="ao.julogic404.kubixapics.feature.convert.ConverterAtiv"
+            android:exported="false"
+            android:parentActivityName=".PrincipalAtiv" />
+
+        <activity
+            android:name="ao.julogic404.kubixapics.feature.resize.RedimensionarAtiv"
+            android:exported="false"
+            android:parentActivityName=".PrincipalAtiv"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name="ao.julogic404.kubixapics.feature.crop.CortarAtiv"
+            android:exported="false"
+            android:parentActivityName=".PrincipalAtiv" />
+
+        <activity
+            android:name="ao.julogic404.kubixapics.feature.compress.ComprimirAtiv"
+            android:exported="false"
+            android:parentActivityName=".PrincipalAtiv" />
+
+        <activity
+            android:name=".SobreAtiv"
+            android:exported="false"
+            android:parentActivityName=".PrincipalAtiv" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+    </application>
+
+</manifest>

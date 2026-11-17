@@ -1,0 +1,27 @@
+name: Limpar completamente o repositório
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  limpar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout da branch main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Eliminar todos os ficheiros e diretórios
+        run: |
+          git rm -r -f --ignore-unmatch .
+          
+          git commit -m "chore: limpar completamente o repositório" || echo "Repositório já está vazio"
+
+      - name: Enviar alterações
+        run: |
+          git push origin main
