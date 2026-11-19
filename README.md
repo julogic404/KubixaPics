@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/imagens/abertura.webp" alt="Kubixa Pics" width="260">
+  <img src="docs/imagens/logo.webp" alt="Kubixa Pics" width="260">
 </p>
 
 <h1 align="center">Kubixa Pics</h1>
