@@ -143,15 +143,17 @@ Assim, mesmo que alguém com acesso de escrita dispare o workflow, a publicaçã
 Nenhum workflow deste projeto corre sozinho: **todos são manuais** (só `workflow_dispatch`).
 Criar ou enviar uma tag **não** publica nada por si só.
 
-**Passo 1 — criar e enviar a tag** (formato `vMAJOR.MINOR.PATCH`):
+**Opção A (a mais simples) — o workflow cria a tag:**
+**Actions → Release assinado → Run workflow** → em *Use workflow from* escolhe a branch `main`
+e escreve a tag (`v4.1.0`). Se a tag ainda não existir, o workflow cria-a no último commit da `main`.
+
+**Opção B — criar a tag tu mesmo** (útil para ter uma mensagem que vira o *changelog*):
 
 ```bash
 git tag -a v4.1.0 -m "Novidades desta versão"
 git push origin v4.1.0
 ```
-
-**Passo 2 — executar o workflow manualmente:**
-**Actions → Release assinado → Run workflow** → escolhe a branch `main` e escreve a tag (`v4.1.0`).
+e depois **Run workflow** com essa tag. Se a tag já existe, o workflow constrói exatamente o commit dela.
 
 Ao ser executado, o `release.yml` faz:
 
@@ -235,4 +237,4 @@ $ANDROID_HOME/build-tools/<versão>/apksigner verify --print-certs app/build/out
 | `Tag invalida` | formato errado | Usa `v1.2.3` (ou `v1.2.3-beta1`) |
 | Erro 403 ao criar a Release | permissões do workflow | **Settings → Actions → General → Workflow permissions** → *Read and write* |
 | O workflow não arranca ao enviar a tag | por desenho: são todos manuais | **Actions → Release assinado → Run workflow** |
-| `couldn't find remote ref` no checkout | a tag não foi enviada ao GitHub | `git push origin v4.1.0` e volta a executar |
+| `A tag ... nao existe e so e criada a partir da branch` | executaste a partir de outra branch | Em *Use workflow from* escolhe `main` (ou cria a tag com `git push`) |

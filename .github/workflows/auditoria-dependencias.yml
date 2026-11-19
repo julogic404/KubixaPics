@@ -38,8 +38,17 @@ jobs:
           distribution: temurin
           java-version: '17'
 
+      - name: Permissoes do wrapper
+        run: chmod +x ./gradlew
+
       - name: Gerar e submeter o grafo (so o que vai para o APK)
         uses: gradle/actions/dependency-submission@v4
         env:
           # Apenas as dependencias de runtime do app (ignora ferramentas de teste/build).
           DEPENDENCY_GRAPH_INCLUDE_CONFIGURATIONS: '(debug|release)RuntimeClasspath'
+
+      - name: Dica se a submissao falhar
+        if: failure()
+        run: |
+          echo "::warning::Se o erro diz 'Dependency graph is disabled', ative em Settings > Advanced Security (Code security) > Dependency graph, e depois execute de novo."
+          echo "O grafo gerado tambem fica como artefacto deste run (dependency-graph_*.json)."

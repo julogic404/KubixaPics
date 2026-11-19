@@ -276,6 +276,7 @@ Nenhum workflow corre sozinho em commits ou tags; todos são manuais (aba **Acti
 git tag -a v4.1.0 -m "Novidades"
 git push origin v4.1.0
 # depois: Actions → Release assinado → Run workflow → tag v4.1.0
+# (a tag pode ser omitida do git: o workflow cria-a na main se nao existir)
 ```
 
 `versionName` e `versionCode` são calculados a partir da tag (`v4.1.0` → `4.1.0` / `40100`).

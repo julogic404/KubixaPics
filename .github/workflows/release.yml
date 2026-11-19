@@ -260,6 +260,9 @@ jobs:
       ENTRADA_MINIMA: ${{ inputs.versao_minima }}
       ENTRADA_CHANGELOG: ${{ inputs.changelog }}
       GH_TOKEN: ${{ github.token }}
+      # Identidade usada no commit do versao.json (quem executou o workflow)
+      ATOR: ${{ github.actor }}
+      ATOR_ID: ${{ github.actor_id }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -307,8 +310,10 @@ jobs:
       - name: Commit (ou PR, se a main for protegida)
         run: |
           set -euo pipefail
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # O commit e atribuido a quem executou o workflow (e nao ao "github-actions[bot]"),
+          # por isso o bot nao aparece como contribuidor do repositorio.
+          git config user.name  "$ATOR"
+          git config user.email "${ATOR_ID}+${ATOR}@users.noreply.github.com"
           git add versao.json
           if git diff --cached --quiet; then
             echo "versao.json ja esta atualizado."

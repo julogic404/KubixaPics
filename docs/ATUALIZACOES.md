@@ -47,7 +47,7 @@ git tag -a v4.1.0 -m "Novidades desta versão (isto vira o changelog)"
 git push origin v4.1.0
 ```
 
-Depois: **Actions → Release assinado → Run workflow** com a tag `v4.1.0`.
+Depois: **Actions → Release assinado → Run workflow** com a tag `v4.1.0` (se a tag não existir, o workflow cria-a na `main`).
 
 Passados ~10 minutos: Release criada **e** `versao.json` atualizado na `main` com um commit
 `chore(release): atualizar versao.json para v4.1.0 [skip ci]`.
@@ -73,3 +73,15 @@ Se o push direto for recusado, o workflow abre um **Pull Request** `atualizar-ve
 **Settings → Actions → General → Workflow permissions → Allow GitHub Actions to create and approve pull
 requests**). Faz *merge* e o aviso fica ativo. Alternativa: nas regras da branch, deixa o
 `github-actions[bot]` contornar a proteção.
+
+### Quem aparece como autor dos commits
+
+O commit do `versao.json` é feito **em teu nome** (a conta que executou o workflow), com o e-mail
+`noreply` do GitHub, e não como `github-actions[bot]`. Assim o bot **não aparece como contribuidor**
+do repositório; o commit conta na tua conta.
+
+- O commit não leva o selo *Verified* (não é assinado), o que é normal neste tipo de commit automático.
+- O **autor da Release** na aba *Releases* continua a ser `github-actions`, porque a Release é criada
+  com o token do próprio GitHub (não conta como contribuidor). Para aparecer o teu nome seria preciso
+  um *Personal Access Token* guardado como secret; não é recomendado só por estética.
+- Commits antigos feitos pelo bot ficam no histórico; removê-los exigiria reescrever o histórico.

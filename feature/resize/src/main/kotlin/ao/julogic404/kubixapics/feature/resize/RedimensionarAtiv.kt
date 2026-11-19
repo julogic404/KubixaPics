@@ -268,7 +268,7 @@ class RedimensionarAtiv : AppCompatActivity() {
             binding.tvTamanhoOriginal.text = if (bitmap != null) {
                 getString(R.string.redimensao_original, bitmap.width, bitmap.height)
             } else {
-                getString(R.string.redimensao_sem_imagem)
+                "" // a dica "Escolha uma imagem" ja aparece na linha do tamanho alvo
             }
             updateApplyEnabled()
             if (bitmap != null) {

@@ -56,6 +56,8 @@ class CortarAtiv : AppCompatActivity() {
         setupToolbar()
         setupAspectChips()
         setupClickListeners()
+        // Texto inicial formatado (sem isto aparecia o "%1$d" cru ate haver imagem).
+        binding.tvRotacao.text = getString(R.string.cortar_rotacao, viewModel.rotationDegrees)
         observeViewModel()
     }
 
