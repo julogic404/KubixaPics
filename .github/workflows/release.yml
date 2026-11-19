@@ -67,10 +67,7 @@ jobs:
       # A tag vem do evento; passada por variavel de ambiente (nunca interpolada no shell).
       TAG_ENTRADA: ${{ inputs.tag || github.ref_name }}
     steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.tag || github.ref_name }}
-
+      # 1) Valida a tag e calcula a versao (nao precisa do codigo, por isso vem primeiro).
       - name: Determinar versao a partir da tag
         id: versao
         run: |
@@ -92,6 +89,30 @@ jobs:
             echo "versao_nome=${TAG_ENTRADA#v}"
             if [ -n "${BASH_REMATCH[4]}" ]; then echo "pre_release=true"; else echo "pre_release=false"; fi
           } >> "$GITHUB_OUTPUT"
+
+      # 2) Codigo da branch escolhida em "Use workflow from".
+      - uses: actions/checkout@v4
+
+      # 3) Se a tag ja existe, constroi EXATAMENTE esse commit. Se nao existe, cria-a no
+      #    commit atual (so a partir da branch principal), como o "git tag + git push".
+      - name: Resolver a tag (usar a existente ou criar)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RAMO_PADRAO: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+          if git fetch --no-tags --depth=1 origin "+refs/tags/${TAG}:refs/tags/${TAG}" 2>/dev/null; then
+            git checkout --detach "refs/tags/${TAG}"
+            echo "Tag ${TAG} ja existia: a construir o commit $(git rev-parse --short HEAD)."
+          else
+            if [ "$GITHUB_REF_NAME" != "$RAMO_PADRAO" ]; then
+              echo "::error::A tag ${TAG} nao existe e so e criada a partir da branch '${RAMO_PADRAO}'. Escolha essa branch em 'Use workflow from' (ou crie a tag com git push)."
+              exit 1
+            fi
+            gh api -X POST "repos/${GITHUB_REPOSITORY}/git/refs" \
+              -f "ref=refs/tags/${TAG}" -f "sha=${GITHUB_SHA}" > /dev/null
+            echo "::notice::A tag ${TAG} nao existia: criada em $(git rev-parse --short HEAD) (${RAMO_PADRAO})."
+          fi
 
       - name: Configurar JDK 17
         uses: actions/setup-java@v4
