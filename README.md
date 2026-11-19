@@ -5,7 +5,7 @@
 <h1 align="center">Kubixa Pics</h1>
 
 <p align="center">
-  <b>Estúdio de imagem completo para Android.</b><br>
+  <b>Editor rápido para Android.</b><br>
   Converta, redimensione, recorte e comprima imagens — direto no telemóvel, sem enviar nada para a internet.
 </p>
 
