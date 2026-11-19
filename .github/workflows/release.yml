@@ -1,0 +1,314 @@
+# Copyright 2026 JuLogic 404
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Release assinado
+
+# SO corre manualmente: aba Actions > Release assinado > Run workflow, indicando uma
+# tag JA existente (ex.: v4.1.0). Nao dispara ao criar/enviar a tag. O workflow:
+#   1. corre os testes unitarios;
+#   2. reconstroi o keystore a partir dos secrets (fora do repositorio);
+#   3. gera o APK e o AAB assinados e verifica a assinatura;
+#   4. publica uma Release no GitHub com o APK e as somas de verificacao;
+#   5. atualiza sozinho o versao.json na branch main (verificador de atualizacoes da app).
+# Guias: docs/ASSINATURA.md e docs/ATUALIZACOES.md
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag JA existente a publicar (ex.: v4.1.0)'
+        required: true
+        type: string
+      forcar:
+        description: 'versao.json: tornar a atualizacao OBRIGATORIA (force=true)'
+        required: false
+        type: boolean
+        default: false
+      versao_minima:
+        description: 'versao.json: min_supported (vazio = mantem o valor atual)'
+        required: false
+        type: string
+      changelog:
+        description: 'versao.json: texto do changelog (vazio = automatico)'
+        required: false
+        type: string
+
+concurrency:
+  group: release-${{ inputs.tag }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: APK assinado + Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # Opcional: em Settings > Environments > release pode exigir aprovacao manual.
+    environment: release
+    permissions:
+      contents: write   # necessario para criar a Release e anexar ficheiros
+    outputs:
+      tag: ${{ steps.versao.outputs.tag }}
+      versao_nome: ${{ steps.versao.outputs.versao_nome }}
+      pre_release: ${{ steps.versao.outputs.pre_release }}
+    env:
+      # A tag vem do evento; passada por variavel de ambiente (nunca interpolada no shell).
+      TAG_ENTRADA: ${{ inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref_name }}
+
+      - name: Determinar versao a partir da tag
+        id: versao
+        run: |
+          if ! [[ "$TAG_ENTRADA" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::Tag invalida '$TAG_ENTRADA'. Use o formato vMAJOR.MINOR.PATCH (ex.: v4.1.0)."
+            exit 1
+          fi
+          MAJOR=${BASH_REMATCH[1]}; MINOR=${BASH_REMATCH[2]}; PATCH=${BASH_REMATCH[3]}
+          {
+            echo "TAG=$TAG_ENTRADA"
+            echo "VERSAO_NOME=${TAG_ENTRADA#v}"
+            # versionCode previsivel e sempre crescente: 4.1.0 -> 40100
+            echo "VERSAO_CODIGO=$((MAJOR * 10000 + MINOR * 100 + PATCH))"
+            if [ -n "${BASH_REMATCH[4]}" ]; then echo "PRE_RELEASE=true"; else echo "PRE_RELEASE=false"; fi
+          } >> "$GITHUB_ENV"
+          # Tambem como outputs do job (usados pelo job que atualiza o versao.json)
+          {
+            echo "tag=$TAG_ENTRADA"
+            echo "versao_nome=${TAG_ENTRADA#v}"
+            if [ -n "${BASH_REMATCH[4]}" ]; then echo "pre_release=true"; else echo "pre_release=false"; fi
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Configurar JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Configurar Gradle (com cache)
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Permissoes do wrapper
+        run: chmod +x ./gradlew
+
+      - name: Testes unitarios
+        run: ./gradlew testDebugUnitTest --stacktrace
+
+      # O keystore e reconstruido FORA da pasta do projeto ($RUNNER_TEMP) e so com
+      # permissao do dono. Os secrets nao sao escritos em nenhum ficheiro.
+      - name: Reconstruir keystore a partir dos secrets
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::error::Falta o secret KEYSTORE_BASE64. Ver docs/ASSINATURA.md."
+            exit 1
+          fi
+          KEYSTORE_PATH="$RUNNER_TEMP/kubixapics-release.jks"
+          (umask 077; echo "$KEYSTORE_BASE64" | base64 --decode > "$KEYSTORE_PATH")
+          echo "KEYSTORE_PATH=$KEYSTORE_PATH" >> "$GITHUB_ENV"
+
+      - name: Build release (APK + AAB assinados)
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          ./gradlew :app:assembleRelease :app:bundleRelease \
+            -PexigirAssinaturaRelease=true \
+            -PversaoNome="$VERSAO_NOME" \
+            -PversaoCodigo="$VERSAO_CODIGO" \
+            --stacktrace
+
+      - name: Verificar APK (assinatura v2/v3, zipalign, permissoes)
+        run: |
+          set -euo pipefail
+          BT="$ANDROID_HOME/build-tools"
+          APKSIGNER=$(find "$BT" -name apksigner | sort -V | tail -n 1)
+          ZIPALIGN=$(find "$BT" -name zipalign | sort -V | tail -n 1)
+          AAPT2=$(find "$BT" -name aapt2 | sort -V | tail -n 1)
+          APK=$(find app/build/outputs/apk/release -name '*.apk' | head -n 1)
+          [ -n "$APK" ] || { echo "::error::APK de release nao encontrado"; exit 1; }
+
+          # 1) Assinatura: v2 e v3 validas e nunca a chave de debug
+          SAIDA=$("$APKSIGNER" verify --verbose --print-certs "$APK")
+          echo "$SAIDA"
+          if echo "$SAIDA" | grep -qi "Android Debug"; then
+            echo "::error::O APK foi assinado com a chave de DEBUG. Verifique os secrets."
+            exit 1
+          fi
+          for ESQUEMA in "v2 scheme (APK Signature Scheme v2): true" "v3 scheme (APK Signature Scheme v3): true"; do
+            echo "$SAIDA" | grep -qF "Verified using $ESQUEMA" \
+              || { echo "::error::Assinatura sem '$ESQUEMA'"; exit 1; }
+          done
+
+          # 2) Zipalign (4 bytes). O alinhamento de 16 KB e so informativo.
+          "$ZIPALIGN" -c -v 4 "$APK" > /dev/null \
+            || { echo "::error::APK nao esta alinhado (zipalign)"; exit 1; }
+          "$ZIPALIGN" -c -P 16 -v 4 "$APK" > /dev/null 2>&1 \
+            && echo "Alinhamento de 16 KB: OK" \
+            || echo "::warning::Bibliotecas nativas sem alinhamento de 16 KB (ou zipalign sem suporte -P)."
+
+          # 3) Permissoes: so as previstas. Qualquer outra (vinda de uma dependencia) falha o build.
+          PACOTE=$("$AAPT2" dump packagename "$APK")
+          PERMISSOES=$("$AAPT2" dump permissions "$APK" | grep -oP "uses-permission(-sdk-23)?: name='\K[^']+" | sort -u)
+          echo "Permissoes no APK:"; echo "$PERMISSOES"
+          PERMITIDAS="android.permission.INTERNET android.permission.WRITE_EXTERNAL_STORAGE ${PACOTE}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+          for P in $PERMISSOES; do
+            case " $PERMITIDAS " in
+              *" $P "*) ;;
+              *) echo "::error::Permissao inesperada no APK: $P"; exit 1 ;;
+            esac
+          done
+
+      - name: Preparar ficheiros da Release
+        run: |
+          mkdir -p dist
+          cp "$(find app/build/outputs/apk/release -name '*.apk' | head -n 1)" "dist/KubixaPics-${TAG}.apk"
+          cp "$(find app/build/outputs/bundle/release -name '*.aab' | head -n 1)" "dist/KubixaPics-${TAG}.aab"
+          (cd dist && sha256sum "KubixaPics-${TAG}.apk" "KubixaPics-${TAG}.aab" > SHA256SUMS.txt)
+          cat dist/SHA256SUMS.txt
+
+      # mapping.txt: necessario para decifrar crashes do release (R8). Fica privado
+      # como artefacto do workflow; nao e anexado a Release publica.
+      - name: Guardar AAB e mapping.txt (privado)
+        uses: actions/upload-artifact@v4
+        with:
+          name: KubixaPics-${{ env.TAG }}-aab-e-mapping
+          path: |
+            dist/KubixaPics-${{ env.TAG }}.aab
+            app/build/outputs/mapping/release/mapping.txt
+          retention-days: 90
+          if-no-files-found: warn
+
+      - name: Publicar na aba Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          name: Kubixa Pics ${{ env.TAG }}
+          prerelease: ${{ env.PRE_RELEASE == 'true' }}
+          generate_release_notes: true
+          body: |
+            ## Instalar
+            1. Baixe **KubixaPics-${{ env.TAG }}.apk** abaixo.
+            2. Abra o ficheiro no telemovel e permita a instalacao de fontes desconhecidas se o Android pedir.
+
+            Integridade: confira o SHA-256 em `SHA256SUMS.txt`.
+          files: |
+            dist/KubixaPics-${{ env.TAG }}.apk
+            dist/SHA256SUMS.txt
+
+      - name: Apagar keystore do runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/kubixapics-release.jks"
+
+  # ---------------------------------------------------------------------------
+  # Atualiza o versao.json (lido pela app) depois de a Release estar publicada.
+  # Pre-lancamentos (v1.2.3-beta1) NAO atualizam o ficheiro.
+  # ---------------------------------------------------------------------------
+  atualizar-versao-json:
+    name: Atualizar versao.json
+    needs: release
+    if: needs.release.outputs.pre_release == 'false'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write        # push direto na main
+      pull-requests: write   # so usado se a main estiver protegida (abre um PR)
+    env:
+      RAMO_VERSAO: main
+      TAG: ${{ needs.release.outputs.tag }}
+      VERSAO_NOME: ${{ needs.release.outputs.versao_nome }}
+      REPO: ${{ github.repository }}
+      # Vazios quando o workflow arranca por tag; preenchidos no "Run workflow" manual.
+      ENTRADA_FORCAR: ${{ inputs.forcar }}
+      ENTRADA_MINIMA: ${{ inputs.versao_minima }}
+      ENTRADA_CHANGELOG: ${{ inputs.changelog }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RAMO_VERSAO }}
+          fetch-depth: 0   # historico + tags (para gerar o changelog)
+
+      - name: Gerar e gravar versao.json
+        run: |
+          set -euo pipefail
+
+          # --- changelog -------------------------------------------------------
+          # 1) texto escrito no "Run workflow"; 2) mensagem da tag anotada
+          # (git tag -a vX -m "..."); 3) assuntos dos commits desde a tag anterior.
+          if [ -n "$ENTRADA_CHANGELOG" ]; then
+            CHANGELOG="$ENTRADA_CHANGELOG"
+          else
+            TIPO=$(git for-each-ref "refs/tags/$TAG" --format='%(objecttype)')
+            if [ "$TIPO" = "tag" ]; then
+              CHANGELOG=$(git for-each-ref "refs/tags/$TAG" --format='%(contents)')
+            else
+              ANTERIOR=$(git describe --tags --abbrev=0 --match 'v*' "${TAG}^" 2>/dev/null || true)
+              INTERVALO="${ANTERIOR:+$ANTERIOR..}$TAG"
+              CHANGELOG=$(git log --no-merges --pretty='format:- %s' "$INTERVALO" | head -n 8)
+            fi
+          fi
+          CHANGELOG=$(printf '%s' "$CHANGELOG" | sed -e 's/[[:space:]]*$//' | head -c 800)
+          [ -n "$CHANGELOG" ] || CHANGELOG="Nova versao $VERSAO_NOME."
+
+          # --- force / min_supported ------------------------------------------
+          # force volta a false em cada Release (so e true se pedido no Run workflow).
+          # min_supported mantem o valor atual, salvo indicacao em contrario.
+          if [ "$ENTRADA_FORCAR" = "true" ]; then FORCE=true; else FORCE=false; fi
+          ATUAL_MIN=$(jq -r '.min_supported // empty' versao.json 2>/dev/null || true)
+          MINIMA="${ENTRADA_MINIMA:-${ATUAL_MIN:-0.0.0}}"
+
+          URL="https://github.com/${REPO}/releases/download/${TAG}/KubixaPics-${TAG}.apk"
+
+          # jq --arg escapa tudo: o changelog (texto livre) nunca parte o JSON.
+          jq -n --arg v "$VERSAO_NOME" --arg c "$CHANGELOG" --argjson f "$FORCE" \
+                --arg m "$MINIMA" --arg u "$URL" \
+                '{version:$v, changelog:$c, force:$f, min_supported:$m, apk_url:$u}' > versao.json.tmp
+          mv versao.json.tmp versao.json
+          echo "--- versao.json ---"; cat versao.json
+
+      - name: Commit (ou PR, se a main for protegida)
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add versao.json
+          if git diff --cached --quiet; then
+            echo "versao.json ja esta atualizado."
+            exit 0
+          fi
+          # [skip ci]: nao dispara o CI so por causa deste commit.
+          git commit -m "chore(release): atualizar versao.json para ${TAG} [skip ci]"
+
+          for tentativa in 1 2 3; do
+            if git pull --rebase origin "$RAMO_VERSAO" && git push origin "HEAD:$RAMO_VERSAO"; then
+              echo "versao.json publicado em $RAMO_VERSAO."
+              exit 0
+            fi
+            sleep 5
+          done
+
+          # Push direto recusado (branch protegida): abre um Pull Request.
+          RAMO="atualizar-versao-${TAG}"
+          git checkout -b "$RAMO"
+          git push --force origin "$RAMO"
+          gh pr create --base "$RAMO_VERSAO" --head "$RAMO" \
+            --title "chore(release): versao.json ${TAG}" \
+            --body "Atualizacao automatica do versao.json para ${TAG}. Faca merge para os utilizadores receberem o aviso."
+          echo "::warning::A branch $RAMO_VERSAO esta protegida: foi aberto um Pull Request. Faca merge para ativar o aviso de atualizacao."
