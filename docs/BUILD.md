@@ -99,7 +99,7 @@ val hasReleaseKeystore = keystoreProps.getProperty("storeFile") != null &&
         rootProject.file(keystoreProps.getProperty("storeFile")!!).exists()
 ```
 
-Se o ficheiro **não existir**, o release cai na assinatura de debug — o projeto compila num clone novo, mas o APK **não é publicável**. O Gradle não falha, o que evita bloquear quem só quer experimentar.
+As credenciais também podem vir de variáveis de ambiente (`KEYSTORE_PATH`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`), que é o que o CI usa. Se **não existirem**, o release cai na assinatura de debug (usa `-PexigirAssinaturaRelease=true` para falhar em vez disso; ver [ASSINATURA.md](ASSINATURA.md)) — o projeto compila num clone novo, mas o APK **não é publicável**. O Gradle não falha, o que evita bloquear quem só quer experimentar.
 
 > ⚠️ **Guarde o `.jks` e as passwords num gestor de segredos.** Perder o keystore significa nunca mais poder atualizar a app na Play Store com o mesmo `applicationId`.
 
@@ -258,37 +258,27 @@ app/build/outputs/
 
 ## 8. Automação (CI)
 
-O workflow está em `.github/workflows/android-ci.yml` e corre em GitHub Actions.
+Há dois workflows em `.github/workflows/`:
 
-### Jobs
-
-| Job | Quando | O que faz |
+| Workflow | Quando | O que faz |
 |---|---|---|
-| `checks` | sempre | testes unitários + lint, publica relatórios |
-| `debug` | sempre (após `checks`) | gera APK debug, publica como artefacto |
-| `release` | tags `v*` ou dispatch manual | reconstrói keystore, gera APK+AAB, verifica assinatura, anexa à Release |
+| `android-ci.yml` | **manual** (*Run workflow*) | testes unitários + lint e APK debug como artefacto |
+| `release.yml` | **manual** (*Run workflow*, indicando uma tag existente) | testes, APK+AAB **assinados**, verificação da assinatura e **Release no GitHub** com o APK e `SHA256SUMS.txt` |
 
-### Configurar os secrets
+O guia completo (criar o keystore, secrets, publicar, resolver problemas) está em
+**[ASSINATURA.md](ASSINATURA.md)**.
 
-Em **Settings → Secrets and variables → Actions**, criar:
+Resumo para publicar:
 
-| Secret | Como obter |
-|---|---|
-| `KEYSTORE_BASE64` | `base64 -w0 kubixapics-release.jks` (Linux) ou `base64 -i kubixapics-release.jks` (macOS) |
-| `KEYSTORE_PASSWORD` | a password do keystore |
-| `KEY_ALIAS` | o alias (ex.: `kubixapics`) |
-| `KEY_PASSWORD` | a password da chave |
-
-O workflow **reconstrói** o `.jks` a partir do base64 em cada run e apaga-o no fim (`if: always()`). O keystore nunca fica no repositório.
-
-### Disparar um release
+Nenhum workflow corre sozinho em commits ou tags; todos são manuais (aba **Actions → Run workflow**).
 
 ```bash
-git tag v4.0.0
-git push origin v4.0.0
+git tag -a v4.1.0 -m "Novidades"
+git push origin v4.1.0
+# depois: Actions → Release assinado → Run workflow → tag v4.1.0
 ```
 
-O job `release` corre, gera os artefactos e cria uma GitHub Release com o APK e o AAB anexados.
+`versionName` e `versionCode` são calculados a partir da tag (`v4.1.0` → `4.1.0` / `40100`).
 
 ### Correr localmente o que o CI corre
 
@@ -328,3 +318,19 @@ O job `release` corre, gera os artefactos e cria uma GitHub Release com o APK e 
 ./gradlew tasks --all                    # todas as tarefas
 ./gradlew --stop                         # parar daemons
 ```
+
+---
+
+## Segurança e otimização do release (estado)
+
+| Item | Estado | Onde |
+|---|---|---|
+| R8 / minificação | Ativado | `isMinifyEnabled = true` + `proguard-android-optimize.txt` (`app/build.gradle.kts`) |
+| Resource shrinking | Ativado | `isShrinkResources = true` |
+| Debuggable | `false` | `isDebuggable = false`; o manifest não tem `debuggable` nem `testOnly` |
+| Assinatura v2/v3 | Ativada (e verificada no CI) | `enableV2Signing`/`enableV3Signing`; `release.yml` falha se faltar v2/v3 ou se usar a chave de debug |
+| Zipalign | Automático (AGP) e verificado no CI | `zipalign -c 4` em `release.yml` |
+| Permissões mínimas | `INTERNET` (verificar atualizações) e `WRITE_EXTERNAL_STORAGE` só até Android 9 | `release.yml` falha se aparecer outra permissão |
+| Componentes exportados | Só `AberturaAtiv` (launcher); tudo o resto `exported="false"` | `AndroidManifest.xml` |
+| Remoção de logs | `Log.v/d/i/w/e` removidos pelo R8 | `app/proguard-rules.pro` (`-assumenosideeffects`) |
+| Auditoria de dependências | Manual: *Auditoria de dependências* → alertas do Dependabot | `.github/workflows/auditoria-dependencias.yml` |

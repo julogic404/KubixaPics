@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright 2026 JuLogic 404
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/superficie_base">
+    android:layout_height="match_parent">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/barraFerramentas"
@@ -138,35 +152,89 @@
                     app:drawableTint="@color/sucesso" />
             </LinearLayout>
 
-            <!-- Desenvolvedor: apenas nome + hiperligacao para o portfolio -->
+            <!-- Desenvolvedor: cartao escuro com contorno verde, nome + utilizador + link e logo do GitHub -->
             <LinearLayout
+                android:id="@+id/cartaoDesenvolvedor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:background="@drawable/fundo_cartao"
-                android:orientation="vertical"
-                android:padding="@dimen/padding_cartao">
+                android:background="@drawable/fundo_cartao_desenvolvedor"
+                android:clickable="true"
+                android:contentDescription="@string/sobre_desenvolvedor_link_desc"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/sobre_desenvolvedor_nome"
-                    android:textColor="@color/texto_primario"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingStart="24dp"
+                    android:paddingTop="22dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="22dp">
 
-                <TextView
-                    android:id="@+id/tvGithub"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:background="?attr/selectableItemBackground"
-                    android:contentDescription="@string/sobre_desenvolvedor_link_desc"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
-                    android:text="@string/sobre_desenvolvedor_link"
-                    android:textColor="@color/verde_marca"
-                    android:textSize="14sp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sobre_desenvolvedor_nome"
+                        android:textColor="#FFFFFF"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="2dp"
+                        android:text="@string/sobre_desenvolvedor_usuario"
+                        android:textColor="@color/dev_texto_suave"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvGithub"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:letterSpacing="0.04"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:text="@string/sobre_desenvolvedor_link"
+                        android:textColor="@color/dev_link"
+                        android:textSize="17sp" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="2dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@drawable/fundo_divisor_verde" />
+
+                <LinearLayout
+                    android:layout_width="108dp"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:importantForAccessibility="no"
+                        android:src="@drawable/ic_github" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="@string/sobre_github_rotulo"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>

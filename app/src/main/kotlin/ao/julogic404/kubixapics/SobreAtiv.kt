@@ -1,5 +1,22 @@
+/*
+ * Copyright 2026 JuLogic 404
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ao.julogic404.kubixapics
 
+import ao.julogic404.kubixapics.core.ui.aplicarFundoKubixa
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.graphics.Paint
@@ -20,6 +37,7 @@ class SobreAtiv : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        aplicarFundoKubixa()
         binding = AtivSobreBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -47,7 +65,7 @@ class SobreAtiv : AppCompatActivity() {
         binding.barraFerramentas.setNavigationOnClickListener { finish() }
         // Hiperligacao para o portfolio no GitHub (sublinhada para parecer um link).
         binding.tvGithub.paintFlags = binding.tvGithub.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-        binding.tvGithub.setOnClickListener { openPortfolio() }
+        binding.cartaoDesenvolvedor.setOnClickListener { openPortfolio() }
     }
 
     private fun openPortfolio() {
@@ -56,7 +74,7 @@ class SobreAtiv : AppCompatActivity() {
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
             // Sem navegador instalado.
-            Toast.makeText(this, R.string.sobre_desenvolvedor_link, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.sobre_desenvolvedor_url, Toast.LENGTH_SHORT).show()
         }
     }
 }

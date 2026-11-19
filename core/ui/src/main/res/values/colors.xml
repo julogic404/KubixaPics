@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright 2026 JuLogic 404
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
 <resources>
     <!-- Paleta clara -->
     <color name="verde_marca">#16A34A</color>
@@ -22,4 +37,14 @@
 
     <color name="veu">#66000000</color>
     <color name="transparente">#00000000</color>
+    <color name="cartao_translucido">#CC0B120D</color>
+    <color name="barra_translucida">#E6070D09</color>
+    <color name="fundo_abertura">#030805</color>
+
+    <!-- Cartao do desenvolvedor (sempre escuro, em qualquer tema) -->
+    <color name="dev_cartao_fundo">#0F1411</color>
+    <color name="dev_cartao_borda">#22C55E</color>
+    <color name="dev_cartao_brilho">#3322C55E</color>
+    <color name="dev_texto_suave">#4B5A51</color>
+    <color name="dev_link">#0A84FF</color>
 </resources>

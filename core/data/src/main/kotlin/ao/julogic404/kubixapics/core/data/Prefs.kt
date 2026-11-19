@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 JuLogic 404
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ao.julogic404.kubixapics.core.data
 
 import android.content.Context
@@ -37,6 +53,11 @@ class Prefs(context: Context) {
         get() = sp.getLong(KEY_COMPRESS_TARGET, 0L)
         set(value) = sp.edit { putLong(KEY_COMPRESS_TARGET, value.coerceAtLeast(0L)) }
 
+    /** Ultima versao cuja atualizacao opcional o utilizador adiou ("Mais tarde"). */
+    var versaoIgnorada: String?
+        get() = sp.getString(KEY_VERSAO_IGNORADA, null)
+        set(value) = sp.edit { putString(KEY_VERSAO_IGNORADA, value) }
+
     var totalConverted: Int
         get() = sp.getInt(KEY_TOTAL_CONVERTED, 0)
         private set(value) = sp.edit { putInt(KEY_TOTAL_CONVERTED, value) }
@@ -71,6 +92,7 @@ class Prefs(context: Context) {
         private const val KEY_OUTPUT_FORMAT = "output_format"
         private const val KEY_COMPRESS_QUALITY = "compress_quality"
         private const val KEY_COMPRESS_TARGET = "compress_target_bytes"
+        private const val KEY_VERSAO_IGNORADA = "versao_ignorada"
         private const val KEY_TOTAL_CONVERTED = "total_converted"
         private const val KEY_TOTAL_ORIGINAL = "total_original_bytes"
         private const val KEY_TOTAL_CONVERTED_BYTES = "total_converted_bytes"

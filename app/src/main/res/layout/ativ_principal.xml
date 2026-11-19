@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright 2026 JuLogic 404
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/superficie_base"
     android:fillViewport="true"
     android:scrollbars="none">
 
@@ -23,19 +37,12 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <FrameLayout
+            <!-- Logo da app (ic_launcher), sem moldura -->
+            <ImageView
                 android:layout_width="56dp"
                 android:layout_height="56dp"
-                android:background="@drawable/fundo_icone_destaque">
-
-                <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_gravity="center"
-                    android:contentDescription="@string/nome_app"
-                    android:src="@drawable/ic_converter"
-                    app:tint="@color/verde_marca" />
-            </FrameLayout>
+                android:contentDescription="@string/nome_app"
+                android:src="@drawable/logo_launcher" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -60,6 +67,16 @@
                     android:textColor="@color/texto_secundario"
                     android:textSize="13sp" />
             </LinearLayout>
+
+            <!-- Menu hamburguer: configuracoes de idioma -->
+            <ImageButton
+                android:id="@+id/btnMenu"
+                android:layout_width="@dimen/tamanho_botao_icone"
+                android:layout_height="@dimen/tamanho_botao_icone"
+                android:background="@drawable/fundo_botao_icone"
+                android:contentDescription="@string/acao_menu"
+                android:src="@drawable/ic_menu"
+                app:tint="@color/texto_primario" />
         </LinearLayout>
 
         <!-- Estatisticas -->

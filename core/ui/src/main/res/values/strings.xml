@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright 2026 JuLogic 404
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
 <resources>
     <!-- Marca -->
     <string name="nome_app">Kubixa Pics</string>
@@ -115,14 +130,35 @@
     <string name="sobre_formatos_entrada">Entrada: JPG, PNG, WebP, GIF, BMP, TIFF, SVG, AVIF, HEIC/HEIF</string>
     <string name="sobre_formatos_saida">Saida: WebP, PNG, JPG, AVIF, BMP, TIFF</string>
     <string name="sobre_recursos_titulo">O que este app faz?</string>
-    <string name="recurso_offline">Funciona 100% offline</string>
+    <string name="recurso_offline">Edição 100% offline</string>
     <string name="recurso_privacidade">As imagens nunca saem do dispositivo</string>
     <string name="recurso_lote">Processa varias imagens de uma vez</string>
     <string name="recurso_qualidade">Controlo de qualidade, resolucao e tamanho</string>
     <string name="recurso_exif">Corrige automaticamente a orientacao das fotos</string>
     <string name="recurso_transparencia">Preserva transparencia quando o formato suporta</string>
     <string name="sobre_desenvolvedor_nome">JuLogic 404</string>
-    <string name="sobre_desenvolvedor_link">github.com/julogic404</string>
+    <string name="sobre_desenvolvedor_link">Aceder OpenSource</string>
+    <string name="sobre_desenvolvedor_usuario" translatable="false">@julogic404</string>
+    <string name="sobre_github_rotulo" translatable="false">GitHub</string>
     <string name="sobre_desenvolvedor_url" translatable="false">https://github.com/julogic404</string>
     <string name="sobre_desenvolvedor_link_desc">Abrir o portfolio no GitHub de JuLogic 404</string>
+
+    <!-- Menu / idioma -->
+    <string name="acao_menu">Menu</string>
+    <string name="menu_idioma_titulo">Idioma</string>
+    <string name="idioma_sistema">Idioma do sistema</string>
+    <string name="idioma_portugues" translatable="false">Português</string>
+    <string name="idioma_ingles" translatable="false">English</string>
+
+    <!-- Atualizacoes -->
+    <string name="menu_procurar_atualizacoes">Procurar atualizações</string>
+    <string name="atualizacao_titulo">Nova versão disponível</string>
+    <string name="atualizacao_titulo_obrigatoria">Atualização obrigatória</string>
+    <string name="atualizacao_msg">A versão %1$s está disponível (instalada: %2$s).\n\n%3$s</string>
+    <string name="atualizacao_msg_obrigatoria">Para continuar a usar o Kubixa Pics, atualize para a versão %1$s.\n\n%2$s</string>
+    <string name="acao_atualizar">Atualizar</string>
+    <string name="acao_mais_tarde">Mais tarde</string>
+    <string name="msg_sem_atualizacoes">Já tem a versão mais recente (%1$s)</string>
+    <string name="msg_verificacao_falhou">Não foi possível verificar atualizações</string>
+    <string name="msg_sem_navegador">Não foi possível abrir o link de download</string>
 </resources>

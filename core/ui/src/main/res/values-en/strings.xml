@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Copyright 2026 JuLogic 404
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
 <resources>
     <!-- Brand -->
     <string name="nome_app">Kubixa Pics</string>
@@ -114,13 +129,30 @@
     <string name="sobre_formatos_entrada">Input: JPG, PNG, WebP, GIF, BMP, TIFF, SVG, AVIF, HEIC/HEIF</string>
     <string name="sobre_formatos_saida">Output: WebP, PNG, JPG, AVIF, BMP, TIFF</string>
     <string name="sobre_recursos_titulo">What does this app do?</string>
-    <string name="recurso_offline">Works 100% offline</string>
+    <string name="recurso_offline">Editing works 100% offline</string>
     <string name="recurso_privacidade">Images never leave the device</string>
     <string name="recurso_lote">Processes several images at once</string>
     <string name="recurso_qualidade">Quality, resolution and size control</string>
     <string name="recurso_exif">Automatically fixes photo orientation</string>
     <string name="recurso_transparencia">Preserves transparency when the format supports it</string>
     <string name="sobre_desenvolvedor_nome">JuLogic 404</string>
-    <string name="sobre_desenvolvedor_link">github.com/julogic404</string>
+    <string name="sobre_desenvolvedor_link">Access OpenSource</string>
     <string name="sobre_desenvolvedor_link_desc">Open JuLogic 404 portfolio on GitHub</string>
+
+    <!-- Menu / idioma -->
+    <string name="acao_menu">Menu</string>
+    <string name="menu_idioma_titulo">Language</string>
+    <string name="idioma_sistema">System language</string>
+
+    <!-- Updates -->
+    <string name="menu_procurar_atualizacoes">Check for updates</string>
+    <string name="atualizacao_titulo">New version available</string>
+    <string name="atualizacao_titulo_obrigatoria">Update required</string>
+    <string name="atualizacao_msg">Version %1$s is available (installed: %2$s).\n\n%3$s</string>
+    <string name="atualizacao_msg_obrigatoria">To keep using Kubixa Pics, please update to version %1$s.\n\n%2$s</string>
+    <string name="acao_atualizar">Update</string>
+    <string name="acao_mais_tarde">Later</string>
+    <string name="msg_sem_atualizacoes">You already have the latest version (%1$s)</string>
+    <string name="msg_verificacao_falhou">Could not check for updates</string>
+    <string name="msg_sem_navegador">Could not open the download link</string>
 </resources>

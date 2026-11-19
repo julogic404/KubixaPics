@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 JuLogic 404
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import java.util.Properties
 
 plugins {
@@ -14,18 +30,39 @@ kotlin {
 // ---------------------------------------------------------------------------
 // Assinatura do release
 // ---------------------------------------------------------------------------
-// As credenciais vivem em keystore.properties (na raiz do projeto, fora do git).
-// Se o ficheiro nao existir, o release usa a assinatura de debug para que o
-// projeto compile imediatamente num clone novo / no Android Studio.
+// As credenciais NUNCA ficam no repositorio. Ordem de leitura:
+//   1. Variaveis de ambiente (usadas no GitHub Actions: nada de passwords em disco)
+//        KEYSTORE_PATH, KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD
+//   2. keystore.properties na raiz do projeto (uso local, esta no .gitignore)
+// Sem credenciais, o release usa a assinatura de debug para o projeto compilar num
+// clone novo (APK nao publicavel). Com -PexigirAssinaturaRelease=true falha em vez disso.
 val keystorePropsFile = rootProject.file("keystore.properties")
 val keystoreProps = Properties().apply {
     if (keystorePropsFile.exists()) {
         keystorePropsFile.inputStream().use { load(it) }
     }
 }
-val keystoreStoreFile = keystoreProps.getProperty("storeFile")
-val hasReleaseKeystore = keystoreStoreFile != null &&
-        rootProject.file(keystoreStoreFile).exists()
+
+fun credencial(variavelAmbiente: String, propriedade: String): String? =
+    System.getenv(variavelAmbiente)?.takeIf { it.isNotBlank() }
+        ?: keystoreProps.getProperty(propriedade)
+
+val caminhoKeystore = credencial("KEYSTORE_PATH", "storeFile")
+val ficheiroKeystore = caminhoKeystore?.let { rootProject.file(it) }
+val hasReleaseKeystore = ficheiroKeystore?.exists() == true
+
+val exigirAssinatura = providers.gradleProperty("exigirAssinaturaRelease").orNull == "true"
+if (exigirAssinatura && !hasReleaseKeystore) {
+    throw GradleException(
+        "Assinatura de release exigida mas o keystore nao foi encontrado. " +
+            "Defina KEYSTORE_PATH/KEYSTORE_PASSWORD/KEY_ALIAS/KEY_PASSWORD ou keystore.properties " +
+            "(ver docs/ASSINATURA.md)."
+    )
+}
+
+// Versao: o CI passa -PversaoNome / -PversaoCodigo a partir da tag (ex.: v4.1.0).
+val versaoNome = providers.gradleProperty("versaoNome").orNull ?: "4.0.2"
+val versaoCodigo = providers.gradleProperty("versaoCodigo").orNull?.toInt() ?: 6
 
 android {
     namespace = "ao.julogic404.kubixapics"
@@ -35,8 +72,8 @@ android {
         applicationId = "ao.julogic404.kubixapics"
         minSdk = 24
         targetSdk = 35
-        versionCode = 6
-        versionName = "4.0.2"
+        versionCode = versaoCodigo
+        versionName = versaoNome
 
         vectorDrawables.useSupportLibrary = true
 
@@ -46,10 +83,10 @@ android {
     signingConfigs {
         if (hasReleaseKeystore) {
             create("release") {
-                storeFile = rootProject.file(keystoreStoreFile!!)
-                storePassword = keystoreProps.getProperty("storePassword")
-                keyAlias = keystoreProps.getProperty("keyAlias")
-                keyPassword = keystoreProps.getProperty("keyPassword")
+                storeFile = ficheiroKeystore
+                storePassword = credencial("KEYSTORE_PASSWORD", "storePassword")
+                keyAlias = credencial("KEY_ALIAS", "keyAlias")
+                keyPassword = credencial("KEY_PASSWORD", "keyPassword")
                 enableV1Signing = true
                 enableV2Signing = true
                 enableV3Signing = true
