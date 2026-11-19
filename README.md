@@ -1,6 +1,6 @@
 # Kubixa Pics
 
-Estúdio de imagem completo para Android, 100% offline. Converte, redimensiona, recorta e comprime imagens sem enviar nada para a internet.
+Estúdio de imagem completo para Android. A edição é 100% offline: converte, redimensiona, recorta e comprime imagens sem enviar nada para a internet. A única ligação é um pedido ao GitHub para verificar atualizações (veja [`docs/ATUALIZACOES.md`](docs/ATUALIZACOES.md)).
 
 - **Package:** `ao.julogic404.kubixapics`
 - **Versão:** 4.0.2 (versionCode 6)
@@ -20,6 +20,7 @@ Estúdio de imagem completo para Android, 100% offline. Converte, redimensiona, 
 > O projeto compila sem `keystore.properties`: nesse caso o build de *release* usa a assinatura de *debug*. Para assinar a sério, copie `keystore.properties.example` para `keystore.properties` e preencha os valores.
 >
 > 📘 **Workflow de compilação completo (debug, release, R8, variantes, CI):** [`docs/BUILD.md`](docs/BUILD.md)
+> 🔐 **Assinar e publicar o APK release (keystore seguro + Releases via workflow manual):** [`docs/ASSINATURA.md`](docs/ASSINATURA.md)
 
 ---
 
@@ -37,7 +38,7 @@ Estúdio de imagem completo para Android, 100% offline. Converte, redimensiona, 
 - Dimensões exatas, **com ou sem proporção**
 - **Percentagem** (1–400%)
 - **Limites máximos** de largura e altura
-- **Presets:** Instagram Post 1080×1080, Instagram Story 1080×1920, Facebook Cover 851×315, YouTube Thumbnail 1280×720, WhatsApp Profile 500×500, HD 1920×1080, Full HD 1920×1080, Cover 3000×3000
+- **Presets:** Instagram Post 1080×1080, Instagram Story 1080×1920, Facebook Cover 851×315, YouTube Thumbnail 1280×720, WhatsApp Profile 500×500, Full HD 1920×1080, Cover 3000×3000
 - Pré-visualização em tempo real do tamanho alvo
 
 ### 3. Recorte
@@ -174,9 +175,9 @@ Assinatura via `keystore.properties` (fora do git). Sem esse ficheiro o release 
 ### CI (GitHub Actions)
 
 `.github/workflows/android-ci.yml`:
-- **`checks`** — testes unitários + lint em cada push/PR
+- **`checks`** — testes unitários + lint (execução **manual**)
 - **`debug`** — APK debug como artefacto
-- **`release`** — em tags `v*`: reconstrói o keystore a partir de secrets, gera APK+AAB, verifica a assinatura e anexa a uma GitHub Release
+- **`release`** — execução **manual** com uma tag `v*` existente: reconstrói o keystore a partir de secrets, gera APK+AAB, verifica a assinatura e anexa a uma GitHub Release
 
 Secrets necessários: `KEYSTORE_BASE64`, `KEYSTORE_PASSWORD`, `KEY_ALIAS`, `KEY_PASSWORD`.
 
@@ -306,3 +307,26 @@ Verificação **real** feita nesta versão (JDK 17 + Gradle 8.14.3 instalados no
 ## Licenças de terceiros
 
 AndroidX, Material Components, Kotlin Coroutines, [AndroidSVG](https://github.com/BigBadaboom/androidsvg) (Apache 2.0), [avif-coder](https://github.com/awxkee/avif-coder) (MIT).
+
+---
+
+## Licença
+
+Copyright 2026 JuLogic 404
+
+Distribuído sob a **Apache License, Version 2.0**. Veja o ficheiro [`LICENSE`](LICENSE) e o [`NOTICE`](NOTICE).
+Cada ficheiro de código-fonte (Kotlin, Gradle, XML, ProGuard e workflows) leva o cabeçalho padrão de copyright e licença recomendado pela Apache.
+
+```
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```

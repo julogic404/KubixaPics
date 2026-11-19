@@ -1,7 +1,7 @@
 {
-  "version": "#",
-  "changelog": "#.",
+  "version": "4.0.2",
+  "changelog": "Primeira versao com verificador de atualizacoes.",
   "force": false,
-  "min_supported": "#",
-  "apk_url": "#"
+  "min_supported": "4.0.0",
+  "apk_url": "https://github.com/julogic404/KubixaPics/releases/download/v4.0.2/KubixaPics-v4.0.2.apk"
 }
